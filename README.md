@@ -16,11 +16,12 @@ The image uses the Docker client to to list and remove containers and images. Fo
 ### Puppet Hiera
 ```
 classes:
-  - basic::docker
+  - docker::run_instance
 
-basic::docker::instance:
+docker::run_instance:
   'cleanup':
-    image: 'docker.meltwater.com/docker-cleanup:latest'
+    image: 'mikljohansson/docker-cleanup:latest'
+    privileged: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       - "/usr/bin/docker:/usr/bin/docker:r"
@@ -31,5 +32,5 @@ basic::docker::instance:
 docker run --privileged \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \
   -v /usr/bin/docker:/usr/bin/docker:r \
-  docker.meltwater.com/docker-cleanup:latest
+  mikljohansson/docker-cleanup:latest
 ```
