@@ -20,7 +20,7 @@ classes:
 
 docker::run_instance:
   'cleanup':
-    image: 'mikljohansson/docker-cleanup:latest'
+    image: 'meltwater/docker-cleanup:latest'
     privileged: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
@@ -32,5 +32,5 @@ docker::run_instance:
 docker run --privileged \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \
   -v /usr/bin/docker:/usr/bin/docker:r \
-  mikljohansson/docker-cleanup:latest
+  meltwater/docker-cleanup:latest
 ```
