@@ -37,7 +37,7 @@ do
     EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited | xargs echo`"
     if [ "$EXITED_CONTAINERS_IDS" != "" ]; then
         echo "Removing exited containers"
-        docker rm $EXITED_CONTAINERS_IDS
+        docker rm -v $EXITED_CONTAINERS_IDS
     fi
 
     # Get all image ID
