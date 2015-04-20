@@ -33,6 +33,13 @@ echo "=> Run the clean script every ${CLEAN_PERIOD} seconds and delay ${DELAY_TI
 trap '{ echo "User Interupt."; exit 1; }' SIGINT
 while [ 1 ]
 do
+    # Cleanup exited containers
+    EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited | xargs echo`"
+    if [ "$EXITED_CONTAINERS_IDS" != "" ]; then
+        echo "Removing exited containers"
+        docker rm $EXITED_CONTAINERS_IDS
+    fi
+
     # Get all image ID
     ALL_LAYER_NUM=$(docker images -a | tail -n +2 | wc -l)
     docker images -q --no-trunc | sort -o ImageIdList
