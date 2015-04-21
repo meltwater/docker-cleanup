@@ -14,6 +14,9 @@ The default parameters can be overridden by setting environment variables on the
 The image uses the Docker client to to list and remove containers and images. For this reason the Docker client and socket is mapped into the container.
 
 ### Puppet Hiera
+
+Using the [garethr-docker](https://github.com/garethr/garethr-docker) module
+
 ```
 classes:
   - docker::run_instance
