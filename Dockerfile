@@ -1,7 +1,4 @@
-FROM alpine:latest
-
-# run.sh script uses some bash specific syntax
-RUN apk add --update bash
+FROM centos:7
 
 # Install cleanup script
 ADD run.sh /run.sh
