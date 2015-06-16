@@ -33,6 +33,9 @@ echo "=> Run the clean script every ${CLEAN_PERIOD} seconds and delay ${DELAY_TI
 trap '{ echo "User Interupt."; exit 1; }' SIGINT
 while [ 1 ]
 do
+    # Cleanup unused volumes
+    /docker-cleanup-volumes.sh
+
     # Cleanup exited containers
     EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited | xargs echo`"
     if [ "$EXITED_CONTAINERS_IDS" != "" ]; then

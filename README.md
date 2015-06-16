@@ -1,7 +1,13 @@
 # Docker Cleanup
-This image will periodically clean up exited containers and remove images that aren't in use by a running container. Based on [tutumcloud/image-cleanup](https://github.com/tutumcloud/image-cleanup) with some small fixes.
+This image will periodically clean up exited containers and remove images and volumes that aren't in use by a 
+running container. Based on [tutumcloud/image-cleanup](https://github.com/tutumcloud/image-cleanup) and 
+[chadoe/docker-cleanup-volumes](https://github.com/chadoe/docker-cleanup-volumes) with some small fixes.
 
-Normally any Docker containers that exit are still kept on disk until *docker rm -v* is used to clean them up. Similarly any images that aren't used any more are kept around. For a cluster node that see lots of containers start and stop, large amounts of exited containers and old image versions can fill up the disk. A Jenkins build slave has the same issues, but can also suffer from SNAPSHOT images being continuously rebuilt and causing untagged <none> images to be left around.
+Normally any Docker containers that exit are still kept on disk until *docker rm -v* is used to clean 
+them up. Similarly any images that aren't used any more are kept around. For a cluster node that see 
+lots of containers start and stop, large amounts of exited containers and old image versions can fill 
+up the disk. A Jenkins build slave has the same issues, but can also suffer from SNAPSHOT images being 
+continuously rebuilt and causing untagged <none> images to be left around.
 
 ## Environment Variables
 The default parameters can be overridden by setting environment variables on the container using the **docker run -e** flag.
@@ -26,11 +32,13 @@ docker::run_instance:
     image: 'meltwater/docker-cleanup:latest'
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "/var/lib/docker:/var/lib/docker:rw"
 ```
 
 ### Command Line
 ```
 docker run \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \
+  -v /var/lib/docker:/var/lib/docker:rw \
   meltwater/docker-cleanup:latest
 ```
