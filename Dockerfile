@@ -1,4 +1,7 @@
-FROM centos:7
+FROM alpine:latest
+
+# run.sh script uses some bash specific syntax
+RUN apk add --update bash docker
 
 # Install cleanup script
 ADD run.sh /run.sh
