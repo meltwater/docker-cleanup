@@ -19,6 +19,49 @@ The default parameters can be overridden by setting environment variables on the
 ## Deployment
 The image uses the Docker client to to list and remove containers and images. For this reason the Docker client and socket is mapped into the container.
 
+### Systemd and CoreOS/Fleet
+
+Create a [Systemd unit](http://www.freedesktop.org/software/systemd/man/systemd.unit.html) file 
+in **/etc/systemd/system/proxymatic.service** with contents like below. Using CoreOS and
+[Fleet](https://coreos.com/docs/launching-containers/launching/fleet-unit-files/) then
+add the X-Fleet section to schedule the unit on all cluster nodes.
+
+```
+[Unit]
+Description=Cleanup of exited containers and unused images/volumes
+After=docker.service
+Requires=docker.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Environment=IMAGE=meltwater/docker-cleanup:latest NAME=docker-cleanup
+
+# Allow docker pull to take some time
+TimeoutStartSec=600
+
+# Restart on failures
+KillMode=none
+Restart=always
+RestartSec=15
+
+ExecStartPre=-/usr/bin/docker kill $NAME
+ExecStartPre=-/usr/bin/docker rm $NAME
+ExecStartPre=-/bin/sh -c 'if ! docker images | tr -s " " : | grep "^${IMAGE}:"; then docker pull "${IMAGE}"; fi'
+ExecStart=/usr/bin/docker run \
+    -v /var/run/docker.sock:/var/run/docker.sock:rw \
+    --name=${NAME} \
+    $IMAGE
+
+ExecStop=/usr/bin/docker stop $NAME
+
+[X-Fleet]
+Global=true
+```
+
+
+
 ### Puppet Hiera
 
 Using the [garethr-docker](https://github.com/garethr/garethr-docker) module
@@ -32,13 +75,11 @@ docker::run_instance:
     image: 'meltwater/docker-cleanup:latest'
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
-      - "/var/lib/docker:/var/lib/docker:rw"
 ```
 
 ### Command Line
 ```
 docker run \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \
-  -v /var/lib/docker:/var/lib/docker:rw \
   meltwater/docker-cleanup:latest
 ```
