@@ -22,7 +22,7 @@ The image uses the Docker client to to list and remove containers and images. Fo
 ### Systemd and CoreOS/Fleet
 
 Create a [Systemd unit](http://www.freedesktop.org/software/systemd/man/systemd.unit.html) file 
-in **/etc/systemd/system/proxymatic.service** with contents like below. Using CoreOS and
+in **/etc/systemd/system/docker-cleanup.service** with contents like below. Using CoreOS and
 [Fleet](https://coreos.com/docs/launching-containers/launching/fleet-unit-files/) then
 add the X-Fleet section to schedule the unit on all cluster nodes.
 
