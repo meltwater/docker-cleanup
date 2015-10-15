@@ -19,6 +19,8 @@ The default parameters can be overridden by setting environment variables on the
 ## Deployment
 The image uses the Docker client to to list and remove containers and images. For this reason the Docker client and socket is mapped into the container.
 
+If the */var/lib/docker* directory is mapped into the container this script will also clean up orphaned Docker volumes.
+
 ### Systemd and CoreOS/Fleet
 
 Create a [Systemd unit](http://www.freedesktop.org/software/systemd/man/systemd.unit.html) file 
@@ -51,6 +53,7 @@ ExecStartPre=-/usr/bin/docker rm $NAME
 ExecStartPre=-/bin/sh -c 'if ! docker images | tr -s " " : | grep "^${IMAGE}:"; then docker pull "${IMAGE}"; fi'
 ExecStart=/usr/bin/docker run \
     -v /var/run/docker.sock:/var/run/docker.sock:rw \
+    -v /var/lib/docker:/var/lib/docker:rw \
     --name=${NAME} \
     $IMAGE
 
@@ -75,11 +78,13 @@ docker::run_instance:
     image: 'meltwater/docker-cleanup:latest'
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
+      - "/var/lib/docker:/var/lib/docker:rw"
 ```
 
 ### Command Line
 ```
 docker run \
   -v /var/run/docker.sock:/var/run/docker.sock:rw \
+  -v /var/lib/docker:/var/lib/docker:rw \
   meltwater/docker-cleanup:latest
 ```
