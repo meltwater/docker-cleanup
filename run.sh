@@ -31,6 +31,7 @@ fi
 echo "=> Run the clean script every ${CLEAN_PERIOD} seconds and delay ${DELAY_TIME} seconds to clean."
 
 trap '{ echo "User Interupt."; exit 1; }' SIGINT
+trap '{ echo "SIGTERM received, exiting."; exit 0; }' SIGTERM
 while [ 1 ]
 do
     # Cleanup unused volumes
