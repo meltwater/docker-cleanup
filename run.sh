@@ -37,12 +37,16 @@ do
     # Cleanup unused volumes
     /docker-cleanup-volumes.sh
 
-    # Cleanup exited containers
-    EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited | xargs echo`"
+    # Cleanup exited/dead containers
+    EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited -f status=dead | xargs echo`"
     if [ "$EXITED_CONTAINERS_IDS" != "" ]; then
         echo "Removing exited containers"
         docker rm -v $EXITED_CONTAINERS_IDS
     fi
+
+    # Get all containers in "created" state
+    rm -f CreatedContainerIdList
+    docker ps -a -q -f status=created | sort > CreatedContainerIdList
 
     # Get all image ID
     ALL_LAYER_NUM=$(docker images -a | tail -n +2 | wc -l)
@@ -77,9 +81,19 @@ do
         mv ToBeCleanedImageIdList2 ToBeCleanedImageIdList
     fi
 
-    # Wait and remove images being used by containers from the delete list again. This prevents the images being pulled from deleting
-    echo "=> About to clean images after ${DELAY_TIME} seconds"
+    # Wait before cleaning containers and images
+    echo "=> Waiting ${DELAY_TIME} seconds before cleaning"
     sleep ${DELAY_TIME} & wait
+
+    # Remove created containers that haven't managed to start within the DELAY_TIME interval
+    rm -f CreatedContainerToClean
+    comm -12 CreatedContainerIdList <(docker ps -a -q -f status=created | sort) > CreatedContainerToClean
+    if [ -s CreatedContainerToClean ]; then
+        echo "=> Start to clean $(cat CreatedContainerToClean | wc -l) created/stuck containers"
+        docker rm -v $(cat CreatedContainerToClean)
+    fi
+
+    # Remove images being used by containers from the delete list again. This prevents the images being pulled from deleting
     CONTAINER_ID_LIST=$(docker ps -aq --no-trunc)
     rm -f ContainerImageIdList
     touch ContainerImageIdList
