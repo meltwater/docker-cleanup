@@ -37,8 +37,8 @@ do
     # Cleanup unused volumes
     /docker-cleanup-volumes.sh
 
-    # Cleanup exited containers
-    EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited | xargs echo`"
+    # Cleanup exited/dead containers
+    EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited -f status=dead | xargs echo`"
     if [ "$EXITED_CONTAINERS_IDS" != "" ]; then
         echo "Removing exited containers"
         docker rm -v $EXITED_CONTAINERS_IDS
