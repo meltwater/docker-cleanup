@@ -28,6 +28,10 @@ if [ "${KEEP_IMAGES}" == "**None**" ]; then
     unset KEEP_IMAGES
 fi
 
+if [ "${LOOP}" != "false" ]; then
+    LOOP=true
+fi
+
 echo "=> Run the clean script every ${CLEAN_PERIOD} seconds and delay ${DELAY_TIME} seconds to clean."
 
 trap '{ echo "User Interupt."; exit 1; }' SIGINT
@@ -123,6 +127,10 @@ do
     fi
 
     rm -f ToBeCleanedImageIdList ContainerImageIdList ToBeCleaned ImageIdList KeepImageIdList
+
+    # Run forever or exit after the first run depending on the value of $LOOP
+    [ "${LOOP}" == "true" ] || break
+
     echo "=> Next clean will be started in ${CLEAN_PERIOD} seconds"
     sleep ${CLEAN_PERIOD} & wait
 done
