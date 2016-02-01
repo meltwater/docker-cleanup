@@ -88,3 +88,11 @@ docker run \
   -v /var/lib/docker:/var/lib/docker:rw \
   meltwater/docker-cleanup:latest
 ```
+
+### Development
+
+A ``Makefile`` is included to help with repetitive commands during development.
+
+```
+make help
+```
