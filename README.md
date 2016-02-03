@@ -15,6 +15,7 @@ The default parameters can be overridden by setting environment variables on the
  * **CLEAN_PERIOD=1800** - Interval in seconds to sleep after completing a cleaning run. Defaults to 1800 seconds = 30 minutes.
  * **DELAY_TIME=1800** - Seconds to wait before removing exited containers and unused images. Defaults to 1800 seconds = 30 minutes.
  * **KEEP_IMAGES** - List of images to avoid cleaning, e.g. "ubuntu:trusty, ubuntu:latest". Defaults to clean all unused images.
+ * **LOOP** - Add the ability to do non-looped cleanups, run it once and exit. Options are true, false. Defaults to true to run it forever in loops.
 
 ## Deployment
 The image uses the Docker client to to list and remove containers and images. For this reason the Docker client and socket is mapped into the container.
