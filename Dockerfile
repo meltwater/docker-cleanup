@@ -10,6 +10,7 @@ ADD docker-cleanup-volumes.sh /docker-cleanup-volumes.sh
 ENV CLEAN_PERIOD **None**
 ENV DELAY_TIME **None**
 ENV KEEP_IMAGES **None**
+ENV KEEP_CONTAINERS **None**
 ENV LOOP true
 
 ENTRYPOINT ["/run.sh"]
