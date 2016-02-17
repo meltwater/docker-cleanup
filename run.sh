@@ -28,6 +28,13 @@ if [ "${KEEP_IMAGES}" == "**None**" ]; then
     unset KEEP_IMAGES
 fi
 
+arr_keep_containers=""
+if [ "${KEEP_CONTAINERS}" != "**None**" ]; then
+  arr_keep_containers=$(echo ${KEEP_CONTAINERS} | tr "," "\n")
+fi
+unset KEEP_CONTAINERS
+
+
 if [ "${LOOP}" != "false" ]; then
     LOOP=true
 fi
@@ -43,10 +50,14 @@ do
 
     # Cleanup exited/dead containers
     EXITED_CONTAINERS_IDS="`docker ps -a -q -f status=exited -f status=dead | xargs echo`"
-    if [ "$EXITED_CONTAINERS_IDS" != "" ]; then
-        echo "Removing exited containers"
-        docker rm -v $EXITED_CONTAINERS_IDS
-    fi
+    for CONTAINER_ID in $EXITED_CONTAINERS_IDS; do
+      CONTAINER_IMAGE=$(docker inspect --format='{{(index .Config.Image)}}' $CONTAINER_ID)
+      if [[ ! "${arr_keep_containers[@]}" =~ "${CONTAINER_IMAGE}" ]]; then
+        echo "Removing container $CONTAINER_ID"
+        docker rm -v $CONTAINER_ID
+      fi
+    done
+    unset CONTAINER_ID
 
     # Get all containers in "created" state
     rm -f CreatedContainerIdList
