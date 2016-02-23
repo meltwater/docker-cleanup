@@ -73,7 +73,7 @@ do
     rm -f ContainerImageIdList
     touch ContainerImageIdList
     for CONTAINER_ID in ${CONTAINER_ID_LIST}; do
-        LINE=$(docker inspect ${CONTAINER_ID} | grep "\"Image\": \"[0-9a-fA-F]\{64\}\"")
+        LINE=$(docker inspect ${CONTAINER_ID} | grep "\"Image\": \"\(sha256:\)\?[0-9a-fA-F]\{64\}\"")
         IMAGE_ID=$(echo ${LINE} | awk -F '"' '{print $4}')
         echo "${IMAGE_ID}" >> ContainerImageIdList
     done
@@ -89,7 +89,7 @@ do
         arr=$(echo ${KEEP_IMAGES} | tr "," "\n")
         for x in $arr
         do
-            docker inspect $x | grep "\"Id\": \"[0-9a-fA-F]\{64\}\"" | head -1 | awk -F '"' '{print $4}'  >> KeepImageIdList
+            docker inspect $x | grep "\"Id\": \"\(sha256:\)\?[0-9a-fA-F]\{64\}\"" | head -1 | awk -F '"' '{print $4}'  >> KeepImageIdList
         done
         sort KeepImageIdList -o KeepImageIdList
         comm -23 ToBeCleanedImageIdList KeepImageIdList > ToBeCleanedImageIdList2
@@ -113,7 +113,7 @@ do
     rm -f ContainerImageIdList
     touch ContainerImageIdList
     for CONTAINER_ID in ${CONTAINER_ID_LIST}; do
-        LINE=$(docker inspect ${CONTAINER_ID} | grep "\"Image\": \"[0-9a-fA-F]\{64\}\"")
+        LINE=$(docker inspect ${CONTAINER_ID} | grep "\"Image\": \"\(sha256:\)\?[0-9a-fA-F]\{64\}\"")
         IMAGE_ID=$(echo ${LINE} | awk -F '"' '{print $4}')
         echo "${IMAGE_ID}" >> ContainerImageIdList
     done
