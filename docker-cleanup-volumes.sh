@@ -1,5 +1,4 @@
 #! /bin/bash
-# Copied from https://github.com/chadoe/docker-cleanup-volumes/commit/f8901fc02dceb6f8fe4294e1be59326bbe56f208
 
 set -eou pipefail
 
@@ -13,7 +12,7 @@ dockerdir=/var/lib/docker
 # Look for an alternate docker directory with -g option
 dockerPs=`ps aux | grep $docker_bin | grep -v grep` || :
 if [[ $dockerPs =~ ' -g ' ]]; then
-    dockerdir=`echo $dockerPs | sed 's/.* -g//' | cut -d ' ' -f 2`
+	dockerdir=`echo $dockerPs | sed 's/.* -g//' | cut -d ' ' -f 2`
 elif [[ $dockerPs =~ ' --graph=' ]]; then
     dockerdir=`echo $dockerPs | sed 's/.* --graph//' | cut -d '=' -f 2 | awk '{print $1}'`
 fi
@@ -93,11 +92,13 @@ do
 done
 
 # Make sure that we can talk to docker daemon. If we cannot, we fail here.
-${docker_bin} info >/dev/null
+${docker_bin} version >/dev/null
 
 container_ids=$(${docker_bin} ps -a -q --no-trunc)
 
 #All volumes from all containers
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
 for container in $container_ids; do
         #add container id to list of volumes, don't think these
         #ever exists in the volumesdir but just to be safe
@@ -116,7 +117,7 @@ for container in $container_ids; do
                         allvolumes+=("${vid}")
                 else
                         #check if it's a bindmount, these have a config.json file in the ${volumesdir} but no files in ${vfsdir} (docker 1.6.2 and below)
-                        for bmv in $(grep --include config.json -Rl "\"IsBindMount\":true" ${volumesdir} | xargs grep -l "\"Path\":\"${volpath}\""); do
+                        for bmv in $(find ${volumesdir} -name config.json -print | xargs grep -l "\"IsBindMount\":true" | xargs grep -l "\"Path\":\"${volpath}\""); do
                                 bmv="$(basename "$(dirname "${bmv}")")"
                                 log_verbose "Found bindmount ${bmv}"
                                 allvolumes+=("${bmv}")
@@ -126,7 +127,7 @@ for container in $container_ids; do
                 fi
         done
 done
+IFS=$SAVEIFS
 
 delete_volumes ${volumesdir}
 delete_volumes ${vfsdir}
-
