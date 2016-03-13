@@ -30,9 +30,9 @@ Note that **KEEP_IMAGES** and **KEEP_CONTAINERS** are left-anchored bash shell p
  * foo/bar
  * foo/b
  * [[:alpha:]]/bar
- * */*:tag
- * *:tag
- * foo/*:tag
+ * \*/\*:tag
+ * \*:tag
+ * foo/\*:tag
 
 However it will not match
 
