@@ -42,6 +42,10 @@ However it will not match
  * :tag
  * [[:alpha:]]:tag
 
+By default, both are set to **\*\*None\*\*** which is the same as the blank string.  If you want to keep ALL images or containers, effectively disabling this 
+part of the cleanup, then you should use **\*:\*** to match all images.  Do not 
+use a bare **\*** as this will be taken as a filename match.
+
 ## Deployment
 The image uses the Docker client to to list and remove containers and images. For this reason the Docker client and socket is mapped into the container.
 
