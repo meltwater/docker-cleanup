@@ -1,5 +1,20 @@
 #!/bin/bash
 
+checkPatterns() {
+    keepit=$3
+    if [ -n "$1" ]; then
+        for PATTERN in $(echo $1 | tr "," "\n"); do
+        if [[ "$2" = $PATTERN* ]]; then
+            if [ $DEBUG ]; then echo "DEBUG: Matches $PATTERN - keeping"; fi
+            keepit=1
+        else
+            if [ $DEBUG ]; then echo "DEBUG: No match for $PATTERN"; fi
+        fi
+        done
+    fi
+    return $keepit
+}
+
 if [ ! -e "/var/run/docker.sock" ]; then
     echo "=> Cannot find docker socket(/var/run/docker.sock), please check the command!"
     exit 1
@@ -75,26 +90,10 @@ do
       CONTAINER_NAME=$(docker inspect --format='{{(index .Name)}}' $CONTAINER_ID)
       if [ $DEBUG ]; then echo "DEBUG: Check container image $CONTAINER_IMAGE named $CONTAINER_NAME"; fi
       keepit=0
-      if [ -n "${KEEP_CONTAINERS}" ]; then
-        for PATTERN in $(echo ${KEEP_CONTAINERS} | tr "," "\n"); do
-          if [[ "${CONTAINER_IMAGE}" = $PATTERN* ]]; then
-            if [ $DEBUG ]; then echo "DEBUG: Matches $PATTERN - keeping"; fi
-            keepit=1
-          else
-            if [ $DEBUG ]; then echo "DEBUG: No match for $PATTERN"; fi
-          fi
-        done
-      fi
-      if [ -n "${KEEP_CONTAINERS_NAMED}" ]; then
-        for PATTERN in $(echo ${KEEP_CONTAINERS_NAMED} | tr "," "\n"); do
-          if [[ "${CONTAINER_NAME}" = $PATTERN* ]]; then
-            if [ $DEBUG ]; then echo "DEBUG: Matches $PATTERN - keeping"; fi
-            keepit=1
-          else
-            if [ $DEBUG ]; then echo "DEBUG: No match for $PATTERN"; fi
-          fi
-        done
-      fi
+      checkPatterns "${KEEP_CONTAINERS}" "${CONTAINER_IMAGE}" $keepit
+      keepit=$?
+      checkPatterns "${KEEP_CONTAINERS_NAMED}" "${CONTAINER_NAME}" $keepit
+      keepit=$?
       if [[ $keepit -eq 0 ]]; then
         echo "Removing stopped container $CONTAINER_ID"
         docker rm -v $CONTAINER_ID
