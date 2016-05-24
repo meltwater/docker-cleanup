@@ -76,8 +76,17 @@ do
     if [ $DEBUG ]; then echo DEBUG: Starting loop; fi
 
     # Cleanup unused volumes
-    echo "=> Removing unused volumes"
-    /docker-cleanup-volumes.sh
+
+    if [[ $(docker version --format '{{(index .Server.Version)}}' | grep -E '^[01]\.[012345678]\.') ]]; then
+      echo "=> Removing unused volumes using 'docker-cleanup-volumes.sh' script"
+      /docker-cleanup-volumes.sh
+    else
+      echo "=> Removing unused volumes using native 'docker volume' command"
+      for volume in $(docker volume ls -qf dangling=true); do
+        echo "Deleting ${volume}"
+        docker volume rm "${volume}"
+      done
+    fi
 
     IFS='
  '
