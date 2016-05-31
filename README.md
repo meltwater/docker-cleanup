@@ -120,6 +120,14 @@ docker run \
   meltwater/docker-cleanup:latest
 ```
 
+### Kubernetes
+
+You can find a Kubernetes `DaemonSet` configuration, that will allow you to run the `meltwater/docker-cleanup` container on every node of your cluster.
+
+```
+kubectl create -f contrib/k8s-daemonset.yml
+```
+
 ### Development
 
 A ``Makefile`` is included to help with repetitive commands during development.
