@@ -24,6 +24,7 @@ The default parameters can be overridden by setting environment variables on the
  * **KEEP_CONTAINERS_NAMED** - List of names for exited or dead containers to avoid cleaning, e.g. "my-container1, persistent-data".
  * **LOOP** - Add the ability to do non-looped cleanups, run it once and exit. Options are true, false. Defaults to true to run it forever in loops.
  * **DEBUG** - Set to 1 to enable more debugging output on pattern matches
+ * **DOCKER_API_VERSION** - The docker API version to use. This defaults to 1.20, but you can override it here in case the docker version on your host differs from the one that is installed in this container. You can find this on your host system by running `docker version --format '{{.Client.APIVersion}}'`.
 
 Note that **KEEP_IMAGES**, **KEEP_CONTAINERS**, and **KEEP_CONTAINERS_NAMED** are left-anchored bash shell pattern matching lists (NOT regexps).  Therefore, the image **foo/bar:tag** will be matched by ANY of the following:
 

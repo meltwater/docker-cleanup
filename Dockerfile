@@ -7,7 +7,8 @@ ENV CLEAN_PERIOD=**None** \
     KEEP_IMAGES=**None** \
     KEEP_CONTAINERS=**None** \
     LOOP=true \
-    DEBUG=0
+    DEBUG=0 \
+    DOCKER_API_VERSION=1.20
 
 # run.sh script uses some bash specific syntax
 RUN apk add --update bash docker grep
