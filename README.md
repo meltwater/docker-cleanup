@@ -1,3 +1,7 @@
+# DEPRECATED
+This repository is no longer activiely maintained.
+
+---
 # Docker Cleanup
 This image will periodically clean up exited containers and remove images and volumes that aren't in use by a
 running container. Based on [tutumcloud/image-cleanup](https://github.com/tutumcloud/image-cleanup) and
